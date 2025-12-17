@@ -5,10 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 
-// Load environment variables FIRST
 dotenv.config();
-
-// Connect to MongoDB BEFORE app logic
 connectDB();
 
 const app = express();
@@ -16,16 +13,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// --- ROUTES ---
+
+// Health Check Route (Required for Render)
+app.get("/", (req, res) => {
+  res.status(200).json({ 
+    status: "success", 
+    message: "Order Tracking API is healthy and running!" 
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Order Tracking API" });
-});
-
+// --- SERVER START ---
+// Render automatically provides a PORT env var (usually 10000)
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
